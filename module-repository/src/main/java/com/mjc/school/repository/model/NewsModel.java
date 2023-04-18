@@ -5,15 +5,17 @@ import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
-@ToString(exclude = {"tagModelSet", "authorModel"})
-@EqualsAndHashCode(exclude = {"id", "tagModelSet"})
+@ToString(exclude = {"tagModelSet", "authorModel", "commentModelList"})
+@EqualsAndHashCode(exclude = {"id", "tagModelSet", "commentModelList"})
 public class NewsModel implements BaseEntity<Long>{
 		@Id
 		@GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,6 +31,8 @@ public class NewsModel implements BaseEntity<Long>{
 		@ManyToOne(cascade={CascadeType.MERGE})
 		@JoinColumn(name = "AUTHOR_ID", referencedColumnName = "id")
 		private AuthorModel authorModel;
+		@OneToMany(mappedBy = "newsModel")
+		private List<CommentModel> commentModelList = new ArrayList<>();
 		@ManyToMany(cascade={CascadeType.MERGE})
 		@JoinTable(name="NEWS_TAG",
 						joinColumns=@JoinColumn(name="TAG_ID", referencedColumnName = "id"),

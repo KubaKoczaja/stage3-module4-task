@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public interface AuthorMapper {
 		AuthorModelDto authorToAuthorDto(AuthorModel authorModel);
-
 		AuthorModel authorDtoToAuthor(AuthorModelDto authorModelDto);
 		AuthorModel authorRequestToAuthor(AuthorRequestDto authorRequestDto);
 }
