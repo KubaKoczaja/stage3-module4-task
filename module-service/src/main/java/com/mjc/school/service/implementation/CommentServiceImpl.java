@@ -1,14 +1,13 @@
 package com.mjc.school.service.implementation;
 
 import com.mjc.school.repository.CommentRepository;
+import com.mjc.school.repository.NewsRepository;
 import com.mjc.school.repository.model.CommentModel;
 import com.mjc.school.service.CommentService;
-import com.mjc.school.service.NewsService;
 import com.mjc.school.service.dto.CommentModelDto;
 import com.mjc.school.service.dto.CommentRequestDto;
 import com.mjc.school.service.exception.NoSuchEntityException;
 import com.mjc.school.service.mapper.CommentMapper;
-import com.mjc.school.service.mapper.NewsMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +19,7 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 		private final CommentRepository commentRepository;
 		private final CommentMapper commentMapper;
-		private final NewsService newsService;
-		private final NewsMapper newsMapper;
+		private final NewsRepository newsRepository;
 		@Override
 		public List<CommentModelDto> readAll() {
 				return commentRepository.readAll().stream().map(commentMapper::commentToCommentDto).toList();
@@ -39,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
 				createRequest.setCreated(LocalDateTime.now());
 				createRequest.setModified(LocalDateTime.now());
 				CommentModel commentToBeSaved = commentMapper.commentRequestToComment(createRequest);
-				commentToBeSaved.setNewsModel(newsMapper.newsDTOToNews(newsService.readById(createRequest.getId())));
+				commentToBeSaved.setNewsModel(newsRepository.readById(createRequest.getNewsId()).orElseThrow());
 				return commentMapper.commentToCommentDto(commentRepository.create(commentToBeSaved));
 		}
 

@@ -38,6 +38,12 @@ public class Main {
 								case 16 -> view.readAuthorByNewsIdView();
 								case 17 -> view.readTagsByNewsIdView();
 								case 18 -> view.readNewsByVariousParameters();
+								case 19 -> view.allCommentsView();
+								case 20 -> view.commentByIdView();
+								case 21 -> view.createCommentView();
+								case 22 -> view.updateCommentView();
+								case 23 -> view.deleteCommentView();
+								case 24 -> view.readCommentsByNewsIdView();
 								case 0 -> view.exitView();
 								default -> view.invalidOption();
 						};

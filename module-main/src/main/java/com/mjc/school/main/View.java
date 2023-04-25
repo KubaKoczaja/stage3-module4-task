@@ -41,6 +41,12 @@ public class View {
 						16 - Get author by news id.
 						17 - Get tags by news id.
 						18 - Get news by various parameters.
+						19 - Get all comments.
+						20 - Get comment by id.
+						21 - Create comment.
+						22 - Update comment.
+						23 - Delete comment by id.
+						24 - Get comments by news id.
 						0 - Exit.""");
 				scanner.reset();
 				return scanner.nextInt();
@@ -224,12 +230,66 @@ public class View {
 				}
 				return command;
 		}
+		public Command allCommentsView() {
+				log.info("List of all comments");
+				return new Command(19, null, null);
+		}
+		public Command commentByIdView() {
+				log.info("Please enter comment id:");
+				Long id = scanner.nextLong();
+				return new Command(20, id, null);
+		}
+
+		public Command createCommentView() {
+				Command command = null;
+				scanner.nextLine();
+				log.info("Please enter comment's content:");
+				String content = scanner.nextLine();
+				log.info("Please enter id of news you would like to comment on:");
+				Long newsId = scanner.nextLong();
+				Map<String, String> body = Map.of(OBJ_CONTENT, content, "newsId", String.valueOf(newsId));
+				try {
+						command = new Command(21, null, objectMapper.writeValueAsString(body));
+				} catch (JsonProcessingException e) {
+						log.info(e.getMessage());
+				}
+				return command;
+		}
+
+		public Command updateCommentView() {
+				Command command = null;
+				scanner.nextLine();
+				log.info("Please enter comment to update:");
+				Long id = scanner.nextLong();
+				log.info("Please enter new content:");
+				scanner.nextLine();
+				String content = scanner.nextLine();
+				Map<String, String> body = Map.of("id", String.valueOf(id),OBJ_CONTENT,content);
+				try {
+						command = new Command(22, null, objectMapper.writeValueAsString(body));
+				} catch (JsonProcessingException e) {
+						log.info(e.getMessage());
+				}
+				return command;
+		}
+
+		public Command deleteCommentView() {
+				scanner.nextLine();
+				log.info("Please enter id of a comment to be removed:");
+				Long id = scanner.nextLong();
+				return new Command(23, id, null);
+		}
+
+		public Command readCommentsByNewsIdView() {
+				scanner.nextLine();
+				log.info("Please enter id of news to check it's comments: ");
+				Long id = scanner.nextLong();
+				return new Command(24, id, null);
+		}
 		public Command exitView() {
 				return new Command(0, null, null);
 		}
 		public Command invalidOption() {
 				return new Command(-1, null, null);
 		}
-
-
 }

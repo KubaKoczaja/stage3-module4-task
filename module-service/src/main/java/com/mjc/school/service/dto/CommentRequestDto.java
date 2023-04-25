@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class CommentRequestDto {
 		private Long id;
+		@Size(min = 5, max = 255)
 		private String content;
 		private LocalDateTime created;
 		private LocalDateTime modified;
