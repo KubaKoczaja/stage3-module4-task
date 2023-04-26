@@ -2,10 +2,12 @@ package com.mjc.school.main;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
-@EnableAspectJAutoProxy
-@ComponentScan("com.mjc.school")
-public class AppConfig {
+@EnableWebMvc
+@ComponentScan(basePackages = {"com.mjc.school"})
+public class SpringConfig {
+
+
 }
