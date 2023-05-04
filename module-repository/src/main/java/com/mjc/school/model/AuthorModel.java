@@ -1,4 +1,4 @@
-package com.mjc.school.repository.model;
+package com.mjc.school.model;
 
 import lombok.*;
 import org.springframework.lang.NonNull;

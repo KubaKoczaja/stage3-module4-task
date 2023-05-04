@@ -1,15 +1,13 @@
 package com.mjc.school.service.implementation;
 
-import com.mjc.school.repository.model.AuthorModel;
-import com.mjc.school.repository.AuthorRepository;
-import com.mjc.school.repository.model.NewsModel;
-import com.mjc.school.repository.implementation.NewsRepositoryImpl;
+import com.mjc.school.repository.NewsRepository;
+import com.mjc.school.model.AuthorModel;
+import com.mjc.school.model.NewsModel;
 import com.mjc.school.service.dto.AuthorModelDto;
 import com.mjc.school.service.dto.NewsModelDto;
 import com.mjc.school.service.dto.NewsRequestDto;
 import com.mjc.school.service.exception.NoSuchEntityException;
 import com.mjc.school.service.mapper.AuthorMapper;
-import com.mjc.school.service.mapper.AuthorMapperImpl;
 import com.mjc.school.service.mapper.NewsMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.lenient;
@@ -34,7 +33,7 @@ class NewsServiceImplTest {
 		@InjectMocks
 		private NewsServiceImpl newsModelService;
 		@Mock
-		private NewsRepositoryImpl newsModelRepository;
+		private NewsRepository newsModelRepository;
 		@Mock
 		private AuthorServiceImpl authorService;
 		@Mock
@@ -46,7 +45,7 @@ class NewsServiceImplTest {
 		void shouldReadAllNews() {
 				List<NewsModel> newsModelList = List.of(new NewsModel(), new NewsModel());
 				when(newsMapper.newsToNewsDTO(any(NewsModel.class))).thenReturn(new NewsModelDto());
-				when(newsModelRepository.readAll()).thenReturn(newsModelList);
+				when(newsModelRepository.findAll()).thenReturn(newsModelList);
 				int lengthExpected = 2;
 				assertEquals(lengthExpected, newsModelService.readAll().size());
 		}
@@ -54,25 +53,25 @@ class NewsServiceImplTest {
 		@Test
 		void shouldReturnEntityWithGivenId() {
 				NewsModelDto expected = new NewsModelDto(1L, "test", "test", LocalDateTime.now(), LocalDateTime.now(), new AuthorModelDto());
-				when(newsModelRepository.readById(anyLong())).thenReturn(Optional.of(new NewsModel()));
+				when(newsModelRepository.findById(anyLong())).thenReturn(Optional.of(new NewsModel()));
 				when(newsMapper.newsToNewsDTO(any(NewsModel.class))).thenReturn(expected);
 				assertEquals(expected, newsModelService.readById(1L));
 		}
 
 		@Test
 		void shouldThrowExceptionWhenThereIsNoNewsWithSpecificId() {
-				when(newsModelRepository.readById(anyLong())).thenThrow(new NoSuchEntityException(""));
+				when(newsModelRepository.findById(anyLong())).thenThrow(new NoSuchEntityException(""));
 				assertThrows(NoSuchEntityException.class, () -> newsModelService.readById(3L));
 		}
 
 		@Test
 		void shouldReturnAddedObjectIfValuesAreCorrect() {
 				NewsRequestDto newsModelToCreate = new NewsRequestDto(1L, "testTitle", "testContent", LocalDateTime.now(), LocalDateTime.now(), 1L, "", "test", "test");
-				NewsModel newsToSave = new NewsModel(1L, "testTitle", "testContent", LocalDateTime.now(), LocalDateTime.now(), new AuthorModel(), new HashSet<>());
+				NewsModel newsToSave = new NewsModel(1L, "testTitle", "testContent", LocalDateTime.now(), LocalDateTime.now(), new AuthorModel(), new ArrayList<>(), new HashSet<>());
 				lenient().when(newsMapper.newsRequestToNews(any(NewsRequestDto.class))).thenReturn(newsToSave);
 				when(authorService.readById(anyLong())).thenReturn(new AuthorModelDto());
 				when(authorMapper.authorDtoToAuthor(any(AuthorModelDto.class))).thenReturn(new AuthorModel());
-				lenient().when(newsModelRepository.create(any(NewsModel.class))).thenReturn(new NewsModel());
+				lenient().when(newsModelRepository.save(any(NewsModel.class))).thenReturn(new NewsModel());
 				NewsModelDto savedNewsDto = new NewsModelDto(1L, "testTitle", "testContent", LocalDateTime.now(), LocalDateTime.now(), new AuthorModelDto());
 				lenient().when(newsMapper.newsToNewsDTO(any(NewsModel.class))).thenReturn(savedNewsDto);
 				assertEquals(savedNewsDto, newsModelService.create(newsModelToCreate));
@@ -82,19 +81,13 @@ class NewsServiceImplTest {
 		void shouldUpdateNewsWithGivenIdWhenValuesOfTitleAndContentAreCorrect() {
 				NewsRequestDto newsModelToUpdate = new NewsRequestDto(1L, "new_title", "new_content", LocalDateTime.now(), LocalDateTime.now(), 1L, "", "test", "test");
 				NewsModelDto updatedNewsDto = new NewsModelDto(1L, "testTitle", "testContent", LocalDateTime.now(), LocalDateTime.now(), new AuthorModelDto());
-				NewsModel newsToSave = new NewsModel(1L, "testTitle", "testContent", LocalDateTime.now(), LocalDateTime.now(), new AuthorModel(), new HashSet<>());
+				NewsModel newsToSave = new NewsModel(1L, "testTitle", "testContent", LocalDateTime.now(), LocalDateTime.now(), new AuthorModel(), new ArrayList<>(), new HashSet<>());
 				AuthorModel authorModel = new AuthorModel(1L, "TestAuthor", LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>());
 				when(authorService.readById(anyLong())).thenReturn(new AuthorModelDto());
 				when(authorMapper.authorDtoToAuthor(any(AuthorModelDto.class))).thenReturn(new AuthorModel());
-				lenient().when(newsModelRepository.readById(anyLong())).thenReturn(Optional.of(newsToSave));
-				lenient().when(newsModelRepository.update(any(NewsModel.class))).thenReturn(new NewsModel());
+				lenient().when(newsModelRepository.findById(anyLong())).thenReturn(Optional.of(newsToSave));
+				lenient().when(newsModelRepository.save(any(NewsModel.class))).thenReturn(new NewsModel());
 				lenient().when(newsMapper.newsToNewsDTO(any(NewsModel.class))).thenReturn(updatedNewsDto);
 				assertEquals(updatedNewsDto, newsModelService.update(newsModelToUpdate));
-		}
-
-		@Test
-		void shouldReturnTrueWhenEntityIsDeleted() {
-				when(newsModelRepository.deleteById(anyLong())).thenReturn(true);
-				assertTrue(newsModelService.deleteById(1L));
 		}
 }

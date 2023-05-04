@@ -1,14 +1,16 @@
 package com.mjc.school.service.implementation;
 
+import com.mjc.school.model.CommentModel;
 import com.mjc.school.repository.CommentRepository;
 import com.mjc.school.repository.NewsRepository;
-import com.mjc.school.repository.model.CommentModel;
 import com.mjc.school.service.CommentService;
 import com.mjc.school.service.dto.CommentModelDto;
 import com.mjc.school.service.dto.CommentRequestDto;
 import com.mjc.school.service.exception.NoSuchEntityException;
 import com.mjc.school.service.mapper.CommentMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,13 +24,25 @@ public class CommentServiceImpl implements CommentService {
 		private final NewsRepository newsRepository;
 		@Override
 		public List<CommentModelDto> readAll() {
-				return commentRepository.readAll().stream().map(commentMapper::commentToCommentDto).toList();
+				return commentRepository.findAll().stream().map(commentMapper::commentToCommentDto).toList();
+		}
+
+		@Override
+		public List<CommentModelDto> readAllPagedAndSorted(int page, int size, String sortBy) {
+				String[] split = sortBy.split("::");
+				return commentRepository
+								.findAll(PageRequest
+												.of(page - 1, size, split[1].equals("asc") ? Sort.by(split[0]).ascending() : Sort.by(split[0]).descending()))
+								.getContent()
+								.stream()
+								.map(commentMapper::commentToCommentDto)
+								.toList();
 		}
 
 		@Override
 		public CommentModelDto readById(Long id) {
 				return commentMapper.commentToCommentDto(commentRepository
-								.readById(id)
+								.findById(id)
 								.orElseThrow(() -> new NoSuchEntityException("No comment with such id!")));
 		}
 
@@ -37,25 +51,26 @@ public class CommentServiceImpl implements CommentService {
 				createRequest.setCreated(LocalDateTime.now());
 				createRequest.setModified(LocalDateTime.now());
 				CommentModel commentToBeSaved = commentMapper.commentRequestToComment(createRequest);
-				commentToBeSaved.setNewsModel(newsRepository.readById(createRequest.getNewsId()).orElseThrow());
-				return commentMapper.commentToCommentDto(commentRepository.create(commentToBeSaved));
+				commentToBeSaved.setNewsModel(newsRepository.findById(createRequest.getNewsId()).orElseThrow(() -> new NoSuchEntityException("No news with such id!")));
+				return commentMapper.commentToCommentDto(commentRepository.save(commentToBeSaved));
 		}
 
 		@Override
 		public CommentModelDto update(CommentRequestDto updateRequest) {
-				CommentModel commentToBeUpdated = commentRepository.readById(updateRequest.getId()).orElseThrow();
+				CommentModel commentToBeUpdated = commentRepository.findById(updateRequest.getId()).orElseThrow(() -> new NoSuchEntityException("No comment with such id!"));
 				commentToBeUpdated.setContent(updateRequest.getContent());
 				commentToBeUpdated.setModified(LocalDateTime.now());
-				return commentMapper.commentToCommentDto(commentRepository.update(commentToBeUpdated));
+				return commentMapper.commentToCommentDto(commentRepository.save(commentToBeUpdated));
 		}
 
 		@Override
 		public boolean deleteById(Long id) {
-				return commentRepository.deleteById(id);
+				commentRepository.deleteById(id);
+				return true;
 		}
 
 		@Override
 		public List<CommentModelDto> readByNewsId(Long newsId) {
-				return commentRepository.readByNewsId(newsId).stream().map(commentMapper::commentToCommentDto).toList();
+				return commentRepository.findAllByNewsModelId(newsId).stream().map(commentMapper::commentToCommentDto).toList();
 		}
 }

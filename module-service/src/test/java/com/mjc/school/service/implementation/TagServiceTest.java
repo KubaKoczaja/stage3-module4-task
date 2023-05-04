@@ -1,7 +1,7 @@
 package com.mjc.school.service.implementation;
 
-import com.mjc.school.repository.model.TagModel;
-import com.mjc.school.repository.implementation.TagRepositoryImpl;
+import com.mjc.school.repository.TagRepository;
+import com.mjc.school.model.TagModel;
 import com.mjc.school.service.dto.TagModelDto;
 import com.mjc.school.service.dto.TagRequestDto;
 import com.mjc.school.service.mapper.TagMapper;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.lenient;
@@ -27,7 +26,7 @@ class TagServiceTest {
   @InjectMocks
   private TagServiceImpl tagService;
   @Mock
-  private TagRepositoryImpl tagRepository;
+  private TagRepository tagRepository;
   @Mock
   private TagMapper tagMapper;
 
@@ -35,7 +34,7 @@ class TagServiceTest {
 		void shouldReadAllTags() {
       List<TagModel> tagModelList = List.of(new TagModel(), new TagModel());
       when(tagMapper.tagToTagDTO(any(TagModel.class))).thenReturn(new TagModelDto());
-      when(tagRepository.readAll()).thenReturn(tagModelList);
+      when(tagRepository.findAll()).thenReturn(tagModelList);
       assertEquals(tagModelList.size(), tagService.readAll().size());
 		}
 
@@ -43,7 +42,7 @@ class TagServiceTest {
 		void shouldReturnTagById() {
       TagModel tagModel = new TagModel(1L, "test", new HashSet<>());
       TagModelDto expectedDto = new TagModelDto(1L, "test");
-      when(tagRepository.readById(anyLong())).thenReturn(Optional.of(tagModel));
+      when(tagRepository.findById(anyLong())).thenReturn(Optional.of(tagModel));
       when(tagMapper.tagToTagDTO(any(TagModel.class))).thenReturn(expectedDto);
       assertEquals(expectedDto, tagService.readById(1L));
 		}
@@ -53,7 +52,7 @@ class TagServiceTest {
       TagModelDto expectedDto = new TagModelDto(1L, "test");
       TagRequestDto requestDto = new TagRequestDto(1L, "test");
       when(tagMapper.tagRequestToTag(any(TagRequestDto.class))).thenReturn(new TagModel());
-      when(tagRepository.create(any(TagModel.class))).thenReturn(new TagModel());
+      when(tagRepository.save(any(TagModel.class))).thenReturn(new TagModel());
       when(tagMapper.tagToTagDTO(any(TagModel.class))).thenReturn(expectedDto);
       assertEquals(expectedDto, tagService.create(requestDto));
 		}
@@ -63,23 +62,17 @@ class TagServiceTest {
       TagModelDto expectedDto = new TagModelDto(1L, "test");
       TagRequestDto requestDto = new TagRequestDto(1L, "test");
       TagModel tagModel = new TagModel(1L, "test", new HashSet<>());
-      when(tagRepository.readById(anyLong())).thenReturn(Optional.of(tagModel));
-      when(tagRepository.update(any(TagModel.class))).thenReturn(new TagModel());
+      when(tagRepository.findById(anyLong())).thenReturn(Optional.of(tagModel));
+      when(tagRepository.save(any(TagModel.class))).thenReturn(new TagModel());
       lenient().when(tagMapper.tagToTagDTO(any(TagModel.class))).thenReturn(expectedDto);
       assertEquals(expectedDto, tagService.update(requestDto));
-		}
-
-		@Test
-		void deleteById() {
-      when((tagRepository.deleteById(anyLong()))).thenReturn(true);
-      assertTrue(tagService.deleteById(1L));
 		}
 
 		@Test
 		void readByNewsId() {
       List<TagModel> tagModelList = List.of(new TagModel(), new TagModel());
       lenient().when(tagMapper.tagToTagDTO(any(TagModel.class))).thenReturn(new TagModelDto());
-      when(tagRepository.readByNewsId(anyLong())).thenReturn(tagModelList);
+      when(tagRepository.findAllByNewsModelId(anyLong())).thenReturn(tagModelList);
       assertEquals(tagModelList.size(), tagService.readByNewsId(1L).size());
 		}
 }

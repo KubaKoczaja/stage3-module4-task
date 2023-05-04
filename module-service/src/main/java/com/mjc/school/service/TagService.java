@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface TagService extends BaseService<TagRequestDto, TagModelDto, Long>{
 		List<TagModelDto> readByNewsId(Long newsId);
+		List<TagModelDto> readAllPagedAndSorted(int page, int size, String sortBy);
 }

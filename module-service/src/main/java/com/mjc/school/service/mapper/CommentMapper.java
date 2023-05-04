@@ -1,6 +1,6 @@
 package com.mjc.school.service.mapper;
 
-import com.mjc.school.repository.model.CommentModel;
+import com.mjc.school.model.CommentModel;
 import com.mjc.school.service.dto.CommentModelDto;
 import com.mjc.school.service.dto.CommentRequestDto;
 import org.mapstruct.Mapper;

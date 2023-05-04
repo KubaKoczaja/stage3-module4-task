@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface BaseRestController<T, R, K> {
-		ResponseEntity<List<R>> readAll();
+		ResponseEntity<List<R>> readAllPagedAndSorted(int page, int size, String sortBy);
 
 		ResponseEntity<R> readById(K id);
 
@@ -13,5 +13,5 @@ public interface BaseRestController<T, R, K> {
 
 		ResponseEntity<R> update(T updateRequest);
 
-		boolean deleteById(K id);
+		ResponseEntity<Boolean> deleteById(K id);
 }

@@ -7,41 +7,52 @@ import com.mjc.school.service.dto.AuthorRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/authors")
+@RequestMapping(value = "/authors", consumes = {"application/JSON"}, produces = {"application/JSON"})
 public class AuthorRestControllerImpl implements BaseRestController<AuthorRequestDto, AuthorModelDto, Long> {
 		private final AuthorService authorService;
+
 		@Override
 		@GetMapping
-		public ResponseEntity<List<AuthorModelDto>> readAll() {
-				List<AuthorModelDto> authorModelDtos = authorService.readAll();
-				return new ResponseEntity<>(authorModelDtos, HttpStatus.OK);
+		public ResponseEntity<List<AuthorModelDto>> readAllPagedAndSorted(@Min(1) @RequestParam int page,
+																												@RequestParam(required = false, defaultValue = "10") int size,
+																												@RequestParam(name = "sort_by", required = false, defaultValue = "name::asc") String sortBy) {
+
+				return new ResponseEntity<>(authorService.readAllPagedAndSorted(page, size, sortBy), HttpStatus.OK);
+		}
+		@Override
+		@GetMapping("/{id}")
+		public ResponseEntity<AuthorModelDto> readById(@PathVariable Long id) {
+				return new ResponseEntity<>(authorService.readById(id), HttpStatus.OK);
 		}
 
 		@Override
-		public ResponseEntity<AuthorModelDto> readById(Long id) {
-				return null;
+		@PostMapping("/create")
+		public ResponseEntity<AuthorModelDto> create(@Valid @RequestBody AuthorRequestDto createRequest) {
+				return new ResponseEntity<>(authorService.create(createRequest), HttpStatus.CREATED);
 		}
 
 		@Override
-		public ResponseEntity<AuthorModelDto> create(AuthorRequestDto createRequest) {
-				return null;
+		@PutMapping("/update")
+		public ResponseEntity<AuthorModelDto> update(@Valid @RequestBody AuthorRequestDto updateRequest) {
+				return new ResponseEntity<>(authorService.update(updateRequest), HttpStatus.ACCEPTED);
 		}
 
 		@Override
-		public ResponseEntity<AuthorModelDto> update(AuthorRequestDto updateRequest) {
-				return null;
+		@DeleteMapping("/delete/{id}")
+		public ResponseEntity<Boolean> deleteById(@PathVariable Long id) {
+				return new ResponseEntity<>(authorService.deleteById(id), HttpStatus.OK);
 		}
 
-		@Override
-		public boolean deleteById(Long id) {
-				return false;
-		}
+		@GetMapping("/by-news/{newsId}")
+		public ResponseEntity<AuthorModelDto> readByNewsId(@PathVariable Long newsId) {
+				return new ResponseEntity<>(authorService.readByNewsId(newsId), HttpStatus.OK );
+	}
 }

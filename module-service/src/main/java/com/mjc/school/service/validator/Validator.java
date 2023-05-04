@@ -1,9 +1,9 @@
 package com.mjc.school.service.validator;
 
 import com.mjc.school.repository.*;
-import com.mjc.school.repository.model.AuthorModel;
-import com.mjc.school.repository.model.NewsModel;
-import com.mjc.school.repository.model.TagModel;
+import com.mjc.school.model.AuthorModel;
+import com.mjc.school.model.NewsModel;
+import com.mjc.school.model.TagModel;
 import com.mjc.school.service.dto.*;
 import com.mjc.school.service.exception.InvalidContentException;
 import com.mjc.school.service.exception.NoSuchEntityException;
@@ -26,7 +26,7 @@ public class Validator {
 		@Before("@annotation(ValidateNewsId)")
 		public void validateIfNewsIdExists(JoinPoint joinPoint) throws NoSuchEntityException{
 				Long id = (Long) joinPoint.getArgs()[0];
-				List<NewsModel> newsModelList = newsModelRepository.readAll();
+				List<NewsModel> newsModelList = newsModelRepository.findAll();
 				if (newsModelList.stream().map(NewsModel::getId).noneMatch(i -> i.equals(id))) {
 						throw new NoSuchEntityException("No such id!");
 				}
@@ -34,7 +34,7 @@ public class Validator {
 		@Before("@annotation(ValidateAuthorId)")
 		public void validateIfAuthorsIdExists(JoinPoint joinPoint) throws NoSuchEntityException {
 				Long id = (Long) joinPoint.getArgs()[0];
-				List<AuthorModel> authorModelList = authorModelRepository.readAll();
+				List<AuthorModel> authorModelList = authorModelRepository.findAll();
 				if (authorModelList.stream().map(AuthorModel::getId).noneMatch(i -> i.equals(id))) {
 						throw new NoSuchEntityException(NO_AUTHOR_ID);
 				}
@@ -42,7 +42,7 @@ public class Validator {
 		@Before("@annotation(ValidateTagId)")
 		public void validateIfTagIdExists(JoinPoint joinPoint) throws NoSuchEntityException {
 				Long id = (Long) joinPoint.getArgs()[0];
-				List<TagModel> tagModelList = tagRepository.readAll();
+				List<TagModel> tagModelList = tagRepository.findAll();
 				if (tagModelList.stream().map(TagModel::getId).noneMatch(i -> i.equals(id))) {
 						throw new NoSuchEntityException("No such tag id!");
 				}
@@ -50,7 +50,7 @@ public class Validator {
 		@Before("@annotation(ValidateNewsContent)")
 		public void validateNewsContent(JoinPoint joinPoint) {
 				NewsRequestDto newsModel = (NewsRequestDto) joinPoint.getArgs()[0];
-				List<AuthorModel> authorModelList = authorModelRepository.readAll();
+				List<AuthorModel> authorModelList = authorModelRepository.findAll();
 				if (newsModel.getTitle().length() < 5 || newsModel.getTitle().length() > 30) {
 						throw new InvalidContentException("Title must be between 5 and 30 characters long!");
 				}

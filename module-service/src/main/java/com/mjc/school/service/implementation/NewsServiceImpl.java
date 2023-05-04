@@ -1,8 +1,8 @@
 package com.mjc.school.service.implementation;
 
-import com.mjc.school.repository.*;
-import com.mjc.school.repository.model.NewsModel;
-import com.mjc.school.repository.model.TagModel;
+import com.mjc.school.model.NewsModel;
+import com.mjc.school.model.TagModel;
+import com.mjc.school.repository.NewsRepository;
 import com.mjc.school.service.AuthorService;
 import com.mjc.school.service.NewsService;
 import com.mjc.school.service.TagService;
@@ -12,9 +12,9 @@ import com.mjc.school.service.exception.NoSuchEntityException;
 import com.mjc.school.service.mapper.AuthorMapper;
 import com.mjc.school.service.mapper.NewsMapper;
 import com.mjc.school.service.mapper.TagMapper;
-import com.mjc.school.service.validator.ValidateNewsContent;
-import com.mjc.school.service.validator.ValidateNewsId;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class NewsServiceImpl implements NewsService {
-		private final NewsRepository newsModelRepository;
+		private final NewsRepository newsRepository;
 		private final AuthorService authorService;
 		private final AuthorMapper authorMapper;
 		private final TagService tagService;
@@ -36,20 +36,29 @@ public class NewsServiceImpl implements NewsService {
 
 		@Override
 		public List<NewsModelDto> readAll() {
-				return newsModelRepository.readAll().stream().map(newsMapper::newsToNewsDTO).toList();
+				return newsRepository.findAll().stream().map(newsMapper::newsToNewsDTO).toList();
+		}
+		@Override
+		public List<NewsModelDto> readAllPagedAndSorted(int page, int size, String sortBy) {
+				String[] split = sortBy.split("::");
+				return newsRepository
+								.findAll(PageRequest
+												.of(page - 1, size, split[1].equals("asc") ? Sort.by(split[0]).ascending() : Sort.by(split[0]).descending()))
+								.getContent()
+								.stream()
+								.map(newsMapper::newsToNewsDTO)
+								.toList();
 		}
 
 		@Override
-		@ValidateNewsId
 		public NewsModelDto readById(Long id) {
 				return newsMapper
-								.newsToNewsDTO(newsModelRepository
-												.readById(id)
+								.newsToNewsDTO(newsRepository
+												.findById(id)
 												.orElseThrow(() -> new NoSuchEntityException("No news with such id!")));
 		}
 
 		@Override
-		@ValidateNewsContent
 		public NewsModelDto create(NewsRequestDto createRequest) {
 				createRequest.setCreateDate(LocalDateTime.now());
 				createRequest.setLastUpdateDate(LocalDateTime.now());
@@ -62,13 +71,12 @@ public class NewsServiceImpl implements NewsService {
 														.collect(Collectors.toSet());
 						savedNews.setTagModelSet(collect);
 				}
-				return newsMapper.newsToNewsDTO(newsModelRepository.create(savedNews));
+				return newsMapper.newsToNewsDTO(newsRepository.save(savedNews));
 		}
 
 		@Override
-		@ValidateNewsContent
 		public NewsModelDto update(NewsRequestDto updateRequest) {
-				NewsModel newsFromDatabase = newsModelRepository.readById(updateRequest.getId())
+				NewsModel newsFromDatabase = newsRepository.findById(updateRequest.getId())
 								.orElseThrow(() -> new NoSuchEntityException("No such news!"));
     		newsFromDatabase.setTitle(updateRequest.getTitle());
 				newsFromDatabase.setContent(updateRequest.getContent());
@@ -81,13 +89,13 @@ public class NewsServiceImpl implements NewsService {
 						newsFromDatabase.setTagModelSet(collect);
 				}
 				newsFromDatabase.setAuthorModel(authorMapper.authorDtoToAuthor(authorService.readById(updateRequest.getAuthorId())));
-				return newsMapper.newsToNewsDTO(newsModelRepository.update(newsFromDatabase));
+				return newsMapper.newsToNewsDTO(newsRepository.save(newsFromDatabase));
 		}
 
 		@Override
-		@ValidateNewsId
 		public boolean deleteById(Long id) {
-				return newsModelRepository.deleteById(id);
+				newsRepository.deleteById(id);
+				return true;
 		}
 
 		@Override
@@ -95,22 +103,22 @@ public class NewsServiceImpl implements NewsService {
 				Set<NewsModel> searchResult = new HashSet<>();
 				if (!newsRequestDto.getTagNames().isBlank()) {
 						Arrays.stream(newsRequestDto.getTagNames().split(","))
-										.map(newsModelRepository::readByTagName)
+										.map(newsRepository::findAllByTagModelName)
 										.forEach(searchResult::addAll);
 				}
 				if (!newsRequestDto.getTagIds().isBlank()) {
 						Arrays.stream(newsRequestDto.getTagIds().split(","))
-										.map(s -> newsModelRepository.readByTagId(Long.valueOf(s)))
+										.map(s -> newsRepository.findAllByTagModelId(Long.valueOf(s)))
 										.forEach(searchResult::addAll);
 				}
     if (!newsRequestDto.getAuthorName().isBlank()) {
-				searchResult.addAll(newsModelRepository.readByAuthorName(newsRequestDto.getAuthorName()));
+				searchResult.addAll(newsRepository.findAllByAuthorModelName(newsRequestDto.getAuthorName()));
 		}
 		if (!newsRequestDto.getTitle().isBlank()) {
-				searchResult.addAll(newsModelRepository.readByTitle(newsRequestDto.getTitle()));
+				searchResult.addAll(newsRepository.findAllByTitle(newsRequestDto.getTitle()));
 		}
 		if (!newsRequestDto.getContent().isBlank()) {
-				searchResult.addAll(newsModelRepository.readByContent(newsRequestDto.getContent()));
+				searchResult.addAll(newsRepository.findAllByContent(newsRequestDto.getContent()));
 		}
 				return searchResult.stream().map(newsMapper::newsToNewsDTO).collect(Collectors.toSet());
 		}
