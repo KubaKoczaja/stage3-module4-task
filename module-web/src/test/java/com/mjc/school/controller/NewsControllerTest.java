@@ -1,14 +1,16 @@
 package com.mjc.school.controller;
 
-import com.mjc.school.service.dto.TagRequestDto;
+import com.mjc.school.service.dto.NewsRequestDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDateTime;
+
 import static io.restassured.RestAssured.given;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TagControllerImplTest {
+class NewsControllerTest {
 		@BeforeAll
 		public static void setup() {
 				String port = System.getProperty("server.port");
@@ -22,7 +24,7 @@ class TagControllerImplTest {
 
 				String basePath = System.getProperty("server.base");
 				if(basePath==null){
-						basePath = "/tags";
+						basePath = "/news";
 				}
 				RestAssured.basePath = basePath;
 
@@ -48,26 +50,20 @@ class TagControllerImplTest {
 		@Test
 		@Order(3)
 		void shouldCreateNewEntityAndReturnStatusCreated() {
-				TagRequestDto tagRequestDto = new TagRequestDto(4L,"bleble");
-				given().contentType(ContentType.JSON).request().body(tagRequestDto).when().post("/create").then().statusCode(201);
+				NewsRequestDto newsRequestDto = new NewsRequestDto(4L,"bleble", "bleble",LocalDateTime.now(),LocalDateTime.now(),1L, "1", "test", "test");
+				given().contentType(ContentType.JSON).request().body(newsRequestDto).when().post("/create").then().statusCode(201);
 		}
 
 		@Test
 		@Order(4)
 		void shouldUpdateEntityAndReturnStatusAccepted() {
-				TagRequestDto tagRequestDto = new TagRequestDto(1L,"bleble");
-				given().contentType(ContentType.JSON).request().body(tagRequestDto).when().put("/update").then().statusCode(202);
+				NewsRequestDto newsRequestDto = new NewsRequestDto(1L,"bleble", "bleble",LocalDateTime.now(),LocalDateTime.now(),1L, "1", "test", "test");
+				given().contentType(ContentType.JSON).request().body(newsRequestDto).when().put("/update").then().statusCode(202);
 		}
 
 		@Test
 		@Order(5)
 		void shouldDeleteEntityAndReturnStatusOk() {
 				given().contentType(ContentType.JSON).when().delete("/delete/2").then().statusCode(200);
-		}
-
-		@Test
-		@Order(6)
-		void readByNewsId() {
-				given().contentType(ContentType.JSON).when().get("/by-news/1").then().statusCode(200);
 		}
 }

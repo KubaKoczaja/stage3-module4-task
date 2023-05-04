@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/tags", consumes = {"application/JSON"}, produces = {"application/JSON"})
-public class TagControllerImpl implements BaseRestController<TagRequestDto, TagModelDto, Long> {
+public class TagController implements BaseRestController<TagRequestDto, TagModelDto, Long> {
 		private final TagService tagService;
 		@Override
 		@GetMapping

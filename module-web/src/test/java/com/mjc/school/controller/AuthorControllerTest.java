@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import static io.restassured.RestAssured.given;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AuthorControllerImplTest {
+class AuthorControllerTest {
 		@BeforeAll
 		public static void setup() {
 				String port = System.getProperty("server.port");
