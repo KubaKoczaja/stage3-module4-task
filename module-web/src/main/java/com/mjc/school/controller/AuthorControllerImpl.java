@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/authors", consumes = {"application/JSON"}, produces = {"application/JSON"})
-public class AuthorRestControllerImpl implements BaseRestController<AuthorRequestDto, AuthorModelDto, Long> {
+public class AuthorControllerImpl implements BaseRestController<AuthorRequestDto, AuthorModelDto, Long> {
 		private final AuthorService authorService;
 
 		@Override

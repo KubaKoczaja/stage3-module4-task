@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/comments", consumes = {"application/JSON"}, produces = {"application/JSON"})
-public class CommentRestControllerImpl implements BaseRestController<CommentRequestDto, CommentModelDto, Long> {
+public class CommentControllerImpl implements BaseRestController<CommentRequestDto, CommentModelDto, Long> {
 		private final CommentService commentService;
 		@Override
 		@GetMapping

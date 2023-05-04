@@ -1,14 +1,16 @@
 package com.mjc.school.controller;
 
-import com.mjc.school.service.dto.TagRequestDto;
+import com.mjc.school.service.dto.AuthorRequestDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 
+import java.time.LocalDateTime;
+
 import static io.restassured.RestAssured.given;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TagRestControllerImplTest {
+class AuthorControllerImplTest {
 		@BeforeAll
 		public static void setup() {
 				String port = System.getProperty("server.port");
@@ -22,7 +24,7 @@ class TagRestControllerImplTest {
 
 				String basePath = System.getProperty("server.base");
 				if(basePath==null){
-						basePath = "/tags";
+						basePath = "/authors";
 				}
 				RestAssured.basePath = basePath;
 
@@ -48,15 +50,15 @@ class TagRestControllerImplTest {
 		@Test
 		@Order(3)
 		void shouldCreateNewEntityAndReturnStatusCreated() {
-				TagRequestDto tagRequestDto = new TagRequestDto(4L,"bleble");
-				given().contentType(ContentType.JSON).request().body(tagRequestDto).when().post("/create").then().statusCode(201);
+				AuthorRequestDto authorRequestDto = new AuthorRequestDto(4L,"bleble", LocalDateTime.now(),LocalDateTime.now(),3L);
+				given().contentType(ContentType.JSON).request().body(authorRequestDto).when().post("/create").then().statusCode(201);
 		}
 
 		@Test
 		@Order(4)
 		void shouldUpdateEntityAndReturnStatusAccepted() {
-				TagRequestDto tagRequestDto = new TagRequestDto(1L,"bleble");
-				given().contentType(ContentType.JSON).request().body(tagRequestDto).when().put("/update").then().statusCode(202);
+				AuthorRequestDto authorRequestDto = new AuthorRequestDto(1L,"bleble", LocalDateTime.now(),LocalDateTime.now(),3L);
+				given().contentType(ContentType.JSON).request().body(authorRequestDto).when().put("/update").then().statusCode(202);
 		}
 
 		@Test

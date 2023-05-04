@@ -16,7 +16,7 @@ import java.util.Set;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/news", consumes = {"application/JSON"}, produces = {"application/JSON"})
-public class NewsRestControllerImpl implements BaseRestController<NewsRequestDto, NewsModelDto, Long> {
+public class NewsControllerImpl implements BaseRestController<NewsRequestDto, NewsModelDto, Long> {
 		private final NewsService newsService;
 		@Override
 		@GetMapping
