@@ -1,6 +1,5 @@
-package com.mjc.school.controller.implementation;
+package com.mjc.school.controller;
 
-import com.mjc.school.controller.BaseRestController;
 import com.mjc.school.service.CommentService;
 import com.mjc.school.service.dto.CommentModelDto;
 import com.mjc.school.service.dto.CommentRequestDto;

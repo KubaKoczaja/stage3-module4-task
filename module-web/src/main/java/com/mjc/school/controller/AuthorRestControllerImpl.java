@@ -1,6 +1,5 @@
-package com.mjc.school.controller.implementation;
+package com.mjc.school.controller;
 
-import com.mjc.school.controller.BaseRestController;
 import com.mjc.school.service.AuthorService;
 import com.mjc.school.service.dto.AuthorModelDto;
 import com.mjc.school.service.dto.AuthorRequestDto;

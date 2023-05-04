@@ -1,4 +1,4 @@
-package com.mjc.school.controller.implementation;
+package com.mjc.school.controller;
 
 import com.mjc.school.service.dto.AuthorRequestDto;
 import io.restassured.RestAssured;

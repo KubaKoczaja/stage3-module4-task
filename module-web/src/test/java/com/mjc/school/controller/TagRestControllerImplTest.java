@@ -1,16 +1,14 @@
-package com.mjc.school.controller.implementation;
+package com.mjc.school.controller;
 
-import com.mjc.school.service.dto.CommentRequestDto;
+import com.mjc.school.service.dto.TagRequestDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 
-import java.time.LocalDateTime;
-
 import static io.restassured.RestAssured.given;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class CommentRestControllerImplTest {
+class TagRestControllerImplTest {
 		@BeforeAll
 		public static void setup() {
 				String port = System.getProperty("server.port");
@@ -24,7 +22,7 @@ class CommentRestControllerImplTest {
 
 				String basePath = System.getProperty("server.base");
 				if(basePath==null){
-						basePath = "/comments";
+						basePath = "/tags";
 				}
 				RestAssured.basePath = basePath;
 
@@ -50,15 +48,15 @@ class CommentRestControllerImplTest {
 		@Test
 		@Order(3)
 		void shouldCreateNewEntityAndReturnStatusCreated() {
-				CommentRequestDto commentRequestDto = new CommentRequestDto(4L,"bleble", LocalDateTime.now(),LocalDateTime.now(),1L);
-				given().contentType(ContentType.JSON).request().body(commentRequestDto).when().post("/create").then().statusCode(201);
+				TagRequestDto tagRequestDto = new TagRequestDto(4L,"bleble");
+				given().contentType(ContentType.JSON).request().body(tagRequestDto).when().post("/create").then().statusCode(201);
 		}
 
 		@Test
 		@Order(4)
 		void shouldUpdateEntityAndReturnStatusAccepted() {
-				CommentRequestDto commentRequestDto = new CommentRequestDto(1L,"bleble", LocalDateTime.now(),LocalDateTime.now(),1L);
-				given().contentType(ContentType.JSON).request().body(commentRequestDto).when().put("/update").then().statusCode(202);
+				TagRequestDto tagRequestDto = new TagRequestDto(1L,"bleble");
+				given().contentType(ContentType.JSON).request().body(tagRequestDto).when().put("/update").then().statusCode(202);
 		}
 
 		@Test
