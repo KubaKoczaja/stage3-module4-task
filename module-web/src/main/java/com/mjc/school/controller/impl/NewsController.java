@@ -36,20 +36,23 @@ public class NewsController implements BaseRestController<NewsRequestDto, NewsMo
 
 		@Override
 		@PostMapping("/create")
+		@ResponseStatus(HttpStatus.CREATED)
 		public ResponseEntity<NewsModelDto> create(@Valid @RequestBody NewsRequestDto createRequest) {
 				return new ResponseEntity<>(newsService.create(createRequest), HttpStatus.CREATED);
 		}
 
 		@Override
-		@PutMapping("/update")
-		public ResponseEntity<NewsModelDto> update(@Valid @RequestBody NewsRequestDto updateRequest) {
+		@PutMapping("/update/{id}")
+		public ResponseEntity<NewsModelDto> update(@PathVariable Long id, @Valid @RequestBody NewsRequestDto updateRequest) {
+				updateRequest.setId(id);
 				return new ResponseEntity<>(newsService.update(updateRequest), HttpStatus.ACCEPTED);
 		}
 
 		@Override
 		@DeleteMapping("/delete/{id}")
-		public ResponseEntity<Boolean> deleteById(@PathVariable Long id) {
-				return new ResponseEntity<>(newsService.deleteById(id), HttpStatus.OK);
+		@ResponseStatus(HttpStatus.NO_CONTENT)
+		public void deleteById(@PathVariable Long id) {
+				newsService.deleteById(id);
 		}
 
 		@GetMapping("/by-various-parameters")

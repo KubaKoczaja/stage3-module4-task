@@ -35,20 +35,23 @@ public class CommentController implements BaseRestController<CommentRequestDto, 
 
 		@Override
 		@PostMapping("/create")
+		@ResponseStatus(HttpStatus.CREATED)
 		public ResponseEntity<CommentModelDto> create(@Valid @RequestBody CommentRequestDto createRequest) {
 				return new ResponseEntity<>(commentService.create(createRequest), HttpStatus.CREATED);
 		}
 
 		@Override
-		@PutMapping("/update")
-		public ResponseEntity<CommentModelDto> update(@Valid @RequestBody CommentRequestDto updateRequest) {
+		@PutMapping("/update/{id}")
+		public ResponseEntity<CommentModelDto> update(@PathVariable Long id, @Valid @RequestBody CommentRequestDto updateRequest) {
+				updateRequest.setId(id);
 				return new ResponseEntity<>(commentService.update(updateRequest), HttpStatus.ACCEPTED);
 		}
 
 		@Override
 		@DeleteMapping("/delete/{id}")
-		public ResponseEntity<Boolean> deleteById(@PathVariable Long id) {
-				return new ResponseEntity<>(commentService.deleteById(id), HttpStatus.OK);
+		@ResponseStatus(HttpStatus.NO_CONTENT)
+		public void deleteById(@PathVariable Long id) {
+				commentService.deleteById(id);
 		}
 		@GetMapping("/by-news/{newsId}")
 		public ResponseEntity<List<CommentModelDto>> readByNewsId(@PathVariable Long newsId) {

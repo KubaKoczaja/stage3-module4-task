@@ -35,20 +35,23 @@ public class AuthorController implements BaseRestController<AuthorRequestDto, Au
 
 		@Override
 		@PostMapping("/create")
+		@ResponseStatus(HttpStatus.CREATED)
 		public ResponseEntity<AuthorModelDto> create(@Valid @RequestBody AuthorRequestDto createRequest) {
 				return new ResponseEntity<>(authorService.create(createRequest), HttpStatus.CREATED);
 		}
 
 		@Override
-		@PutMapping("/update")
-		public ResponseEntity<AuthorModelDto> update(@Valid @RequestBody AuthorRequestDto updateRequest) {
+		@PutMapping("/update/{id}")
+		public ResponseEntity<AuthorModelDto> update(@PathVariable Long id, @Valid @RequestBody AuthorRequestDto updateRequest) {
+				updateRequest.setId(id);
 				return new ResponseEntity<>(authorService.update(updateRequest), HttpStatus.ACCEPTED);
 		}
 
 		@Override
 		@DeleteMapping("/delete/{id}")
-		public ResponseEntity<Boolean> deleteById(@PathVariable Long id) {
-				return new ResponseEntity<>(authorService.deleteById(id), HttpStatus.OK);
+		@ResponseStatus(HttpStatus.NO_CONTENT)
+		public void deleteById(@PathVariable Long id) {
+				authorService.deleteById(id);
 		}
 
 		@GetMapping("/by-news/{newsId}")

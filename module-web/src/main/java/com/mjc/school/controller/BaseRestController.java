@@ -11,7 +11,7 @@ public interface BaseRestController<T, R, K> {
 
 		ResponseEntity<R> create(T createRequest);
 
-		ResponseEntity<R> update(T updateRequest);
+		ResponseEntity<R> update(K id, T updateRequest);
 
-		ResponseEntity<Boolean> deleteById(K id);
+		void deleteById(K id);
 }

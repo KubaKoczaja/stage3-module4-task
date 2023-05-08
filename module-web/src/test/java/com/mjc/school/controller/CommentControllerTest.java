@@ -58,13 +58,13 @@ class CommentControllerTest {
 		@Order(4)
 		void shouldUpdateEntityAndReturnStatusAccepted() {
 				CommentRequestDto commentRequestDto = new CommentRequestDto(1L,"bleble", LocalDateTime.now(),LocalDateTime.now(),1L);
-				given().contentType(ContentType.JSON).request().body(commentRequestDto).when().put("/update").then().statusCode(202);
+				given().contentType(ContentType.JSON).request().body(commentRequestDto).when().put("/update/1").then().statusCode(202);
 		}
 
 		@Test
 		@Order(5)
 		void shouldDeleteEntityAndReturnStatusOk() {
-				given().contentType(ContentType.JSON).when().delete("/delete/2").then().statusCode(200);
+				given().contentType(ContentType.JSON).when().delete("/delete/2").then().statusCode(204);
 		}
 
 		@Test

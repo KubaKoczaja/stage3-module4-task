@@ -35,20 +35,23 @@ public class TagController implements BaseRestController<TagRequestDto, TagModel
 
 		@Override
 		@PostMapping("/create")
+		@ResponseStatus(HttpStatus.CREATED)
 		public ResponseEntity<TagModelDto> create(@Valid @RequestBody TagRequestDto createRequest) {
 				return new ResponseEntity<>(tagService.create(createRequest), HttpStatus.CREATED);
 		}
 
 		@Override
-		@PutMapping("/update")
-		public ResponseEntity<TagModelDto> update(@Valid @RequestBody TagRequestDto updateRequest) {
+		@PutMapping("/update/{id}")
+		public ResponseEntity<TagModelDto> update(@PathVariable Long id, @Valid @RequestBody TagRequestDto updateRequest) {
+				updateRequest.setId(id);
 				return new ResponseEntity<>(tagService.update(updateRequest), HttpStatus.ACCEPTED);
 		}
 
 		@Override
 		@DeleteMapping("/delete/{id}")
-		public ResponseEntity<Boolean> deleteById(@PathVariable Long id) {
-				return new ResponseEntity<>(tagService.deleteById(id), HttpStatus.OK);
+		@ResponseStatus(HttpStatus.NO_CONTENT)
+		public void deleteById(@PathVariable Long id) {
+				tagService.deleteById(id);
 		}
 
 		@GetMapping("/by-news/{newsId}")

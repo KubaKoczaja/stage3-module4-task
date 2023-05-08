@@ -58,13 +58,13 @@ class AuthorControllerTest {
 		@Order(4)
 		void shouldUpdateEntityAndReturnStatusAccepted() {
 				AuthorRequestDto authorRequestDto = new AuthorRequestDto(1L,"bleble", LocalDateTime.now(),LocalDateTime.now(),3L);
-				given().contentType(ContentType.JSON).request().body(authorRequestDto).when().put("/update").then().statusCode(202);
+				given().contentType(ContentType.JSON).request().body(authorRequestDto).when().put("/update/1").then().statusCode(202);
 		}
 
 		@Test
 		@Order(5)
 		void shouldDeleteEntityAndReturnStatusOk() {
-				given().contentType(ContentType.JSON).when().delete("/delete/2").then().statusCode(200);
+				given().contentType(ContentType.JSON).when().delete("/delete/2").then().statusCode(204);
 		}
 
 		@Test

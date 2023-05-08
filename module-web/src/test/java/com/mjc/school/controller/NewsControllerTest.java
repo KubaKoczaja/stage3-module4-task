@@ -58,12 +58,12 @@ class NewsControllerTest {
 		@Order(4)
 		void shouldUpdateEntityAndReturnStatusAccepted() {
 				NewsRequestDto newsRequestDto = new NewsRequestDto(1L,"bleble", "bleble",LocalDateTime.now(),LocalDateTime.now(),1L, "1", "test", "test");
-				given().contentType(ContentType.JSON).request().body(newsRequestDto).when().put("/update").then().statusCode(202);
+				given().contentType(ContentType.JSON).request().body(newsRequestDto).when().put("/update/1").then().statusCode(202);
 		}
 
 		@Test
 		@Order(5)
 		void shouldDeleteEntityAndReturnStatusOk() {
-				given().contentType(ContentType.JSON).when().delete("/delete/2").then().statusCode(200);
+				given().contentType(ContentType.JSON).when().delete("/delete/2").then().statusCode(204);
 		}
 }
